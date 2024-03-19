@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { Link, useMatch } from "react-router-dom";
 
 const Nav = styled.nav`
@@ -71,7 +71,14 @@ const Search = styled.span`
 const Input = styled(motion.input)`
   transform-origin: right center;
   position: absolute;
-  left: -150px;
+  right: -5px;
+  padding: 5px 10px;
+  padding-left: 40px;
+  z-index: -1;
+  color: white;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.white.lighter};
 `;
 const LogoVariants = {
   normal: {
@@ -91,7 +98,16 @@ function Header() {
   console.log(homeMatch, tvMatch);
 
   const [searchOpen, setSearchOpen] = useState(false);
-  const toggleSearch = () => setSearchOpen((prev) => !prev);
+  const inputAnimation = useAnimation();
+
+  const toggleSearch = () => {
+    if (searchOpen) {
+      inputAnimation.start({ scaleX: 0 });
+    } else {
+      inputAnimation.start({ scaleX: 1 });
+    }
+    setSearchOpen((prev) => !prev);
+  };
   return (
     <Nav>
       <Col>
@@ -140,8 +156,9 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            animate={inputAnimation}
+            initial={{ scaleX: 0 }}
             transition={{ type: "linear" }}
-            animate={{ scaleX: searchOpen ? 1 : 0 }}
             placeholder="Search for Movie and Tv Show"
           />
         </Search>
