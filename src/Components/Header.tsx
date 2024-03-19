@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link, useMatch } from "react-router-dom";
@@ -47,7 +48,7 @@ const Item = styled.li`
   }
 `;
 
-const Circle = styled.span`
+const Circle = styled(motion.span)`
   position: absolute;
   width: 8px;
   height: 8px;
@@ -60,9 +61,17 @@ const Circle = styled.span`
 `;
 const Search = styled.span`
   color: white;
+  display: flex;
+  align-items: center;
+  position: relative;
   svg {
     height: 25px;
   }
+`;
+const Input = styled(motion.input)`
+  transform-origin: right center;
+  position: absolute;
+  left: -150px;
 `;
 const LogoVariants = {
   normal: {
@@ -78,7 +87,11 @@ const LogoVariants = {
 function Header() {
   const homeMatch = useMatch("/");
   const tvMatch = useMatch("/tv");
+
   console.log(homeMatch, tvMatch);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const toggleSearch = () => setSearchOpen((prev) => !prev);
   return (
     <Nav>
       <Col>
@@ -95,30 +108,42 @@ function Header() {
         </Logo>
         <Items>
           <Item>
-            <Link to="/">Home {homeMatch ? <Circle /> : null}</Link>
+            <Link to="/">
+              Home {homeMatch ? <Circle layoutId="circle" /> : null}
+            </Link>
           </Item>
           <Item>
-            <Link to="/tv">Tv Shows {tvMatch ? <Circle /> : null}</Link>
+            <Link to="/tv">
+              Tv Shows {tvMatch ? <Circle layoutId="circle" /> : null}
+            </Link>
           </Item>
         </Items>
       </Col>
       <Col>
         <Search>
-          <svg
+          <motion.svg
+            onClick={toggleSearch}
+            animate={{ x: searchOpen ? -180 : 0 }}
+            transition={{ type: "linear" }}
             data-slot="icon"
             fill="none"
-            stroke-width="1.5"
+            strokeWidth="1.5"
             stroke="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
             ></path>
-          </svg>
+          </motion.svg>
+          <Input
+            transition={{ type: "linear" }}
+            animate={{ scaleX: searchOpen ? 1 : 0 }}
+            placeholder="Search for Movie and Tv Show"
+          />
         </Search>
       </Col>
     </Nav>
