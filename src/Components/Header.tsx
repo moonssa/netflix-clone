@@ -99,6 +99,7 @@ const LogoVariants = {
 };
 const NavVariants = {
   top: {
+    // backgroundColor: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
     backgroundColor: "rgba(0,0,0,0)",
   },
   scroll: {
