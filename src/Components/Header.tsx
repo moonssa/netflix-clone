@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import {
   motion,
   useAnimation,
-  useMotionValue,
   useMotionValueEvent,
   useScroll,
 } from "framer-motion";
@@ -44,6 +43,7 @@ const Items = styled.ul`
 `;
 const Item = styled.li`
   margin-right: 20px;
+  text-transform: uppercase;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,8 +100,8 @@ const LogoVariants = {
 };
 const NavVariants = {
   top: {
-    // backgroundColor: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
-    backgroundColor: "rgba(0,0,0,0)",
+    // background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+    backgroundColor: "rgba(0,0,0,0.1)",
   },
   scroll: {
     backgroundColor: "rgba(0,0,0,1)",
@@ -112,9 +112,10 @@ interface IForm {
 }
 function Header() {
   const homeMatch = useMatch("/");
-  const tvMatch = useMatch("/tv");
+  const comingMatch = useMatch("/coming-soon");
+  const nowMatch = useMatch("/now-playing");
 
-  console.log(homeMatch, tvMatch);
+  console.log(homeMatch, comingMatch, nowMatch);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnimation = useAnimation();
@@ -122,7 +123,6 @@ function Header() {
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (y) => {
-    console.log(y);
     if (y > 80) {
       navAnimation.start("scroll");
     } else {
@@ -140,7 +140,6 @@ function Header() {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm<IForm>();
   const onValid = (data: IForm) => {
-    console.log(data);
     navigate(`/search?keyword=${data.keyword}`);
   };
   return (
@@ -160,12 +159,17 @@ function Header() {
         <Items>
           <Item>
             <Link to="/">
-              Home {homeMatch ? <Circle layoutId="circle" /> : null}
+              Popular {homeMatch ? <Circle layoutId="circle" /> : null}
             </Link>
           </Item>
           <Item>
-            <Link to="/tv">
-              Tv Shows {tvMatch ? <Circle layoutId="circle" /> : null}
+            <Link to="/coming-soon">
+              Coming Soon {comingMatch ? <Circle layoutId="circle" /> : null}
+            </Link>
+          </Item>
+          <Item>
+            <Link to="/now-playing">
+              Now Playing {nowMatch ? <Circle layoutId="circle" /> : null}
             </Link>
           </Item>
         </Items>

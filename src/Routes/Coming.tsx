@@ -3,9 +3,7 @@ import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
   IGetMovieResult,
-  IMovieDetail,
-  getMovie,
-  getPopular,
+  getComingSoon,
   makeBgPath,
   makeImagePath,
 } from "../api";
@@ -63,7 +61,7 @@ const Overlay = styled(motion.div)`
 const BigMovie = styled(motion.div)`
   position: absolute;
   width: 40vw;
-  height: 75vh;
+  height: 80vh;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -84,20 +82,11 @@ const BigTitle = styled.h3`
   position: relative;
   top: -80px;
 `;
-const BigContent = styled.div`
-  padding: 20px;
-  position: relative;
-  top: -100px;
-  color: ${(props) => props.theme.white.lighter};
-`;
 const BigOverview = styled.p`
   padding: 20px;
   position: relative;
   top: -80px;
   color: ${(props) => props.theme.white.lighter};
-`;
-const BigDetail = styled.h5`
-  margin-bottom: 5px;
 `;
 const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-color: white;
@@ -158,14 +147,17 @@ const infoVariants = {
 };
 const offset = 6;
 
-function Home() {
+function ComingSoon() {
   const { data, isLoading } = useQuery<IGetMovieResult>({
-    queryKey: ["movies", "popular"],
-    queryFn: getPopular,
+    queryKey: ["movies", "comingSoon"],
+    queryFn: getComingSoon,
   });
+  console.log(data);
+
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const navigate = useNavigate();
+
   const { scrollY } = useScroll();
   const increaseIndex = () => {
     if (data) {
@@ -179,34 +171,24 @@ function Home() {
   };
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const boxClicked = (movieId: number) => {
-    navigate(`/movies/${movieId}`, { replace: true });
-    console.log("Box Clicked");
+    navigate(`/movies/${movieId}`);
   };
   const bigMovieMatch: PathMatch<string> | null = useMatch("/movies/:movieId");
 
   const onOverlayClick = () => {
-    navigate("/");
-    console.log("Home overlay Clicked");
+    navigate("/coming-soon");
+    console.log("test");
   };
+
+  // const onOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.stopPropagation();
+  //   navigate(`/coming-soon`);
+  // };
   const clickedMovie = data?.results.find(
     (movie) =>
       bigMovieMatch?.params.movieId &&
       movie.id === +bigMovieMatch?.params.movieId
   );
-
-  const { data: movieDetails } = useQuery<IMovieDetail>({
-    queryKey: ["movieDetails", bigMovieMatch?.params.movieId],
-    queryFn: () => {
-      const movieId = bigMovieMatch?.params.movieId;
-      if (typeof movieId === "string") {
-        return getMovie(movieId);
-      } else {
-        return Promise.reject(new Error("Movie ID is undefined"));
-      }
-    },
-    enabled: !!bigMovieMatch?.params.movieId,
-  });
-
   return (
     <Wrapper>
       {isLoading ? (
@@ -236,7 +218,7 @@ function Home() {
                   .map((movie) => (
                     <Box
                       layoutId={movie.id + ""}
-                      onClick={() => boxClicked(movie.id)}
+                      onClick={(e) => boxClicked(movie.id)}
                       key={movie.id}
                       bgPhoto={makeImagePath(movie.backdrop_path)}
                       whileHover="hover"
@@ -262,41 +244,20 @@ function Home() {
                 />
 
                 <BigMovie
-                  layoutId={bigMovieMatch?.params.movieId}
+                  layoutId={bigMovieMatch?.params.movieId + ""}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (
                     <>
                       <BigCover
-                        // src={makeImagePath(clickedMovie.backdrop_path, "w500")}
                         style={{
                           backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.7), transparent), url(${makeImagePath(
                             clickedMovie.backdrop_path
                           )})`,
                         }}
                       />
-
                       <BigTitle>{clickedMovie.title}</BigTitle>
                       <BigOverview>{clickedMovie.overview}</BigOverview>
-                      <BigContent>
-                        <BigDetail>
-                          Budget: $
-                          {movieDetails?.budget.toLocaleString("en-US")}
-                        </BigDetail>
-                        <BigDetail>
-                          Revenue: $
-                          {movieDetails?.revenue.toLocaleString("en-US")}
-                        </BigDetail>
-                        <BigDetail>
-                          Runtime: {movieDetails?.runtime} minutes
-                        </BigDetail>
-                        <BigDetail>
-                          Rating: {movieDetails?.vote_average.toFixed(1)}
-                        </BigDetail>
-                        <BigDetail>
-                          Homepage: {movieDetails?.homepage}
-                        </BigDetail>
-                      </BigContent>
                     </>
                   )}
                 </BigMovie>
@@ -308,4 +269,4 @@ function Home() {
     </Wrapper>
   );
 }
-export default Home;
+export default ComingSoon;

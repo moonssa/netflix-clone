@@ -1,9 +1,9 @@
-import "./App.css";
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import Home from "./Routes/Home";
-import Tv from "./Routes/Tv";
 import Search from "./Routes/Search";
+import ComingSoon from "./Routes/Coming";
+import NowPlaying from "./Routes/Now";
 
 export const router = createBrowserRouter([
   {
@@ -11,20 +11,24 @@ export const router = createBrowserRouter([
     element: <Root />,
     children: [
       {
-        path: "/",
-        element: <Home />,
-      },
-      {
         path: "movies/:id",
         element: <Home />,
       },
       {
-        path: "/tv",
-        element: <Tv />,
+        path: "/coming-soon",
+        element: <ComingSoon />,
+      },
+      {
+        path: "/now-playing",
+        element: <NowPlaying />,
       },
       {
         path: "/search",
         element: <Search />,
+      },
+      {
+        path: "/",
+        element: <Home />,
       },
     ],
   },
